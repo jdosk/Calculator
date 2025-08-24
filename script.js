@@ -18,6 +18,12 @@ const deleteCharacter = function() {
     }
 };
 
+const setToDisplayLimit = function() {
+    while (display.textContent.length > maxDisplay) {
+        deleteCharacter();
+    }
+};
+
 const clearZeros = function() {
     while (display.textContent.startsWith("0")) {
         display.textContent = display.textContent.slice(1);
@@ -82,8 +88,12 @@ const multiply = function(numOne, numTwo) {
 const divide = function(numOne, numTwo) {
     let x = parseFloat(numOne);
     let y = parseFloat(numTwo);
-    
-    return (x / y).toString();
+
+    if (y === 0) {
+        alert("ERROR: Cannot Divide by Zero!");
+        waitingToOperate = false;
+        return "ERROR";
+    } else return (x / y).toString();
 }
 
 const operate = function(num1, num2, operator) {
@@ -100,15 +110,19 @@ const operate = function(num1, num2, operator) {
 }
 
 const equals = function() {
-    if (currentOperator != "") {
+    if (currentOperator != "" && numberOne != undefined) {
         numberTwo = display.textContent;
         let result = operate(numberOne, numberTwo, currentOperator);
+        numberOne = result;
+        numberTwo = "";
         display.textContent = result;
+        setToDisplayLimit();
         currentOperator = "";
+        waitingToOperate = false;
     }
-    
 }
 
+/*
 buttons.forEach(button => {
   button.addEventListener("click", () => {
     switch (button.id) {
@@ -167,11 +181,43 @@ buttons.forEach(button => {
             deleteCharacter();
             break;
         case "equals":
-            console.log("equals");
             equals();
             break;
         default:
             console.log("default");
+    }
+  });
+});
+*/
+
+buttons.forEach(button => {
+  button.addEventListener("click", () => {
+    const val = button.dataset.value;
+    if (val) {
+      appendToDisplay(val);
+      return;
+    }
+
+    switch (button.id) {
+      case "decimal":
+        if (!checkDecimals()) appendToDisplay(".");
+        break;
+      case "add":
+      case "subtract":
+      case "multiply":
+      case "divide":
+        getSecondNum(button.id);
+        break;
+      case "ac":
+        clearDisplay();
+        waitingToOperate = false;
+        break;
+      case "del":
+        deleteCharacter();
+        break;
+      case "equals":
+        equals();
+        break;
     }
   });
 });
