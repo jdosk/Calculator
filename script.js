@@ -1,16 +1,20 @@
+// Document selectors
 const buttons = document.querySelectorAll(".btn");
 const display = document.querySelector(".display");
 
-const maxDisplay = 14;
-let numberOne;
-let numberTwo;
-let currentOperator;
-let waitingToOperate = false;
+// Global Variables
+const maxDisplay = 14; // Max digit size to fit the display
+let numberOne; // First number for math functions
+let numberTwo; // Second number for math functions
+let currentOperator; // Current operator to use for math functions
+let waitingToOperate = false; // when true will save new entry values to numberTwo
 
+// Clears the current display and sets to 0
 const clearDisplay = function() {
     display.textContent = "0";
 };
 
+// Deletes the last character, if no characters exist then sets to 0
 const deleteCharacter = function() {
     display.textContent = display.textContent.slice(0, -1);
     if (display.textContent === "") {
@@ -18,22 +22,26 @@ const deleteCharacter = function() {
     }
 };
 
+// Deletes extra characters to keep within limit of maxDisplay
 const setToDisplayLimit = function() {
     while (display.textContent.length > maxDisplay) {
         deleteCharacter();
     }
 };
 
+// Removes extra zeros at front on number to clear room in display
 const clearZeros = function() {
     while (display.textContent.startsWith("0")) {
         display.textContent = display.textContent.slice(1);
     }
 };
 
+// Checks if display is at max limit
 const checkMaxDisplay = function() {
     return display.textContent.length === 14;
 };
 
+// Adds new value to display, if display is at max limit deletes front value first
 const appendToDisplay = function(num) {
     if (!checkMaxDisplay()) {
         clearZeros();
@@ -45,17 +53,24 @@ const appendToDisplay = function(num) {
     }
 };
 
+// Checks for existing decimal and returns true/false
 const checkDecimals = function() {
     return display.textContent.includes(".");
 }
 
+// sets the first and second numbers, if a operator is called it will operate before clearing second number
+// This function will handle multiple operations if equals is not pressed
 const getSecondNum = function(operator) {
+    // Check if waiting for second number and do accordingly
     if (!waitingToOperate) {
-        numberOne = display.textContent;
+        // Store numberOne, store current operator, clear the display and set waitingToOperate to true
+        //    to avoid numberOne being overwritten
+        numberOne = display.textContent; 
         clearDisplay();
         waitingToOperate = true;
         currentOperator = operator;
     } else {
+        // Store numberTwo, and set the results of the operation to numberOne, then clear display
         numberTwo = display.textContent;
         let result = operate(numberOne, numberTwo, currentOperator);
         numberOne = result;
@@ -64,6 +79,7 @@ const getSecondNum = function(operator) {
     }
 }
 
+// Adds two numbers
 const add = function(numOne, numTwo) {
     let x = parseFloat(numOne);
     let y = parseFloat(numTwo);
@@ -71,6 +87,7 @@ const add = function(numOne, numTwo) {
     return (x + y).toString();
 }
 
+// Subtracts two numbers
 const subtract = function(numOne, numTwo) {
     let x = parseFloat(numOne);
     let y = parseFloat(numTwo);
@@ -78,6 +95,7 @@ const subtract = function(numOne, numTwo) {
     return (x - y).toString();
 }
 
+// multiplies two numbers
 const multiply = function(numOne, numTwo) {
     let x = parseFloat(numOne);
     let y = parseFloat(numTwo);
@@ -85,17 +103,19 @@ const multiply = function(numOne, numTwo) {
     return (x * y).toString();
 }
 
+// divides two numbers. Gives error if numTwo is 0 (cannot divide by 0)
 const divide = function(numOne, numTwo) {
     let x = parseFloat(numOne);
     let y = parseFloat(numTwo);
 
     if (y === 0) {
         alert("ERROR: Cannot Divide by Zero!");
-        waitingToOperate = false;
+        waitingToOperate = false; // Essentially to reset calculator display
         return "ERROR";
     } else return (x / y).toString();
 }
 
+// Calls on necessary operation
 const operate = function(num1, num2, operator) {
     switch (operator) {
         case "add":
@@ -109,113 +129,51 @@ const operate = function(num1, num2, operator) {
     }
 }
 
+// Handles necessary math operation and resets necessary variables and displays math output
 const equals = function() {
+    // Check if currentOperator & numberOne are 
+    //    in acceptable state (cant press equals without an operator first)
     if (currentOperator != "" && numberOne != undefined) {
         numberTwo = display.textContent;
         let result = operate(numberOne, numberTwo, currentOperator);
         numberOne = result;
         numberTwo = "";
         display.textContent = result;
-        setToDisplayLimit();
-        currentOperator = "";
-        waitingToOperate = false;
+        setToDisplayLimit(); // Make sure results fit in display before showing
+        currentOperator = ""; // Reset operator so repeated equals presses dont cause errors
+        waitingToOperate = false; // Reset so numberOne is new value being stored
     }
 }
 
-/*
+// Event handler to add on click functions
 buttons.forEach(button => {
   button.addEventListener("click", () => {
-    switch (button.id) {
-        case "one":
-            appendToDisplay("1");
-            break;
-        case "two":
-            appendToDisplay("2");
-            break;
-        case "three":
-            appendToDisplay("3");
-            break;
-        case "four":
-            appendToDisplay("4");
-            break;
-        case "five":
-            appendToDisplay("5");
-            break;
-        case "six":
-            appendToDisplay("6");
-            break;
-        case "seven":
-            appendToDisplay("7");
-            break;
-        case "eight":
-            appendToDisplay("8");
-            break;
-        case "nine":
-            appendToDisplay("9");
-            break;
-        case "zero":
-            appendToDisplay("0");
-            break;
-        case "decimal":
-            if (checkDecimals()) {
-                break;
-            } else appendToDisplay(".");
-            break;
-        case "add":
-            getSecondNum("add");
-            break;
-        case "subtract":
-            getSecondNum("subtract");
-            break;
-        case "multiply":
-            getSecondNum("multiply");
-            break;
-        case "divide":
-            getSecondNum("divide");
-            break;
-        case "ac":
-            clearDisplay();
-            waitingToOperate = false;
-            break;
-        case "del":
-            deleteCharacter();
-            break;
-        case "equals":
-            equals();
-            break;
-        default:
-            console.log("default");
-    }
-  });
-});
-*/
-
-buttons.forEach(button => {
-  button.addEventListener("click", () => {
+    // check for dataset value first, and then append to display if exists
     const val = button.dataset.value;
     if (val) {
       appendToDisplay(val);
       return;
     }
 
+    // switch to check the type of non number function to pass
     switch (button.id) {
-      case "decimal":
+      case "decimal": // Check if decimals exist before appending
         if (!checkDecimals()) appendToDisplay(".");
         break;
       case "add":
       case "subtract":
       case "multiply":
-      case "divide":
+      case "divide":  // add, subtract, multiply, and divide all call same function
         getSecondNum(button.id);
         break;
-      case "ac":
+      case "ac": // clears display and resets waitingToOperate to fully reset calculator
         clearDisplay();
         waitingToOperate = false;
         break;
-      case "del":
+      case "del": // Deletes last character
         deleteCharacter();
         break;
-      case "equals":
+      case "equals": // finishes operations
         equals();
         break;
     }
