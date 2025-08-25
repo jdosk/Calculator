@@ -3,7 +3,7 @@ const buttons = document.querySelectorAll(".btn");
 const display = document.querySelector(".display");
 
 // Global Variables
-const maxDisplay = 14; // Max digit size to fit the display
+const maxDisplay = 12; // Max digit size to fit the display
 let numberOne; // First number for math functions
 let numberTwo; // Second number for math functions
 let currentOperator; // Current operator to use for math functions
@@ -38,7 +38,7 @@ const clearZeros = function() {
 
 // Checks if display is at max limit
 const checkMaxDisplay = function() {
-    return display.textContent.length === 14;
+    return display.textContent.length === maxDisplay;
 };
 
 // Adds new value to display, if display is at max limit deletes front value first

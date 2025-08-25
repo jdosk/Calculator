@@ -1,10 +1,18 @@
+@font-face {
+  font-family: "Digital";
+  src: url("./fonts/Digital7-rg1mL.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 html, body {
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0;
-    font-size: 48px;
+    font-size: 60px;
+    font-family: Digital;
 }
 
 .calculator {
@@ -13,6 +21,10 @@ html, body {
     justify-content: center;
     flex-direction: column;
     gap: 28px;
+    padding: 60px;
+    border: 1px solid black;
+    border-radius: 8px;
+    background-color: #7181A8;
 }
 
 .display {
@@ -23,6 +35,8 @@ html, body {
     height: 80px;
     display: flex;
     align-items: center;
+    background-color: #2E2E2E;
+    color: white;
 }
 
 .btn-container {
